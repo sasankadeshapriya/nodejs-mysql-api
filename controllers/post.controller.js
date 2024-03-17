@@ -23,6 +23,32 @@ function save(req,res){
 
 }
 
+function show(req,res){
+    const id = req.params.id;
+
+    models.Post.findByPk(id).then(result => {
+        res.status(200).json(result);
+    }).catch(error => {
+        res.status(500).json({
+            message : "Something went to wrong!"
+        });
+    });
+}
+
+function index(req,res){
+    
+    models.Post.findAll().then(result => {
+        res.status(200).json(result);
+    }).catch(error => {
+        res.status(500).json({
+            message : "Something went to wrong!"
+        });
+    });
+}
+
+
 module.exports = {
-    save:save
+    save:save,
+    show:show,
+    index:index
 }
