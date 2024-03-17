@@ -1,3 +1,4 @@
+const validator = require('fastest-validator');
 const models = require('../models');
 
 function save(req,res){
@@ -7,6 +8,22 @@ function save(req,res){
         imageUrl:req.body.image_url,
         categoryId:req.body.category_id,
         userId:1
+    }
+
+    const schema = {
+        title:{type:"string",optional:false,max:"65"},
+        content:{type:"string",optional:false,max:"1300"},
+        categoryId:{type:"number",optional:false}
+    }
+
+    const vldator = new validator();
+    const validationResponse = vldator.validate(post,schema);
+
+    if(validationResponse !== true){
+        return res.status(400).json({
+            message:"Validation failed",
+            error:validationResponse
+        });
     }
 
     models.Post.create(post).then(result =>{
@@ -70,6 +87,22 @@ function update(req,res){
     }
 
     const userId = 1;
+
+    const schema = {
+        title:{type:"string",optional:false,max:"65"},
+        content:{type:"string",optional:false,max:"1300"},
+        categoryId:{type:"number",optional:false}
+    }
+
+    const vldator = new validator();
+    const validationResponse = vldator.validate(updatePost,schema);
+
+    if(validationResponse !== true){
+        return res.status(400).json({
+            message:"Validation failed",
+            error:validationResponse
+        });
+    }
 
     models.Post.findByPk(id).then(result => {
         if(result){
