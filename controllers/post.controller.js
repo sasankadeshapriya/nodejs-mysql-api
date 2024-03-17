@@ -27,7 +27,13 @@ function show(req,res){
     const id = req.params.id;
 
     models.Post.findByPk(id).then(result => {
-        res.status(200).json(result);
+       if(result){
+            res.status(200).json(result);
+       }else{
+            res.status(404).json({
+                message:"Post not found!"
+            });
+       }
     }).catch(error => {
         res.status(500).json({
             message : "Something went to wrong!"
@@ -38,7 +44,13 @@ function show(req,res){
 function index(req,res){
     
     models.Post.findAll().then(result => {
-        res.status(200).json(result);
+        if(result){
+            res.status(200).json(result);
+       }else{
+            res.status(404).json({
+                message:"Posts not found!"
+            });
+       }
     }).catch(error => {
         res.status(500).json({
             message : "Something went to wrong!"
@@ -59,11 +71,42 @@ function update(req,res){
 
     const userId = 1;
 
-    models.Post.update(updatePost,{where:{id:id, userId:userId}}).then(result =>{
-        res.status(200).json({
-            message:"Post updated successfully",
-            post:updatePost
-        });
+    models.Post.findByPk(id).then(result => {
+        if(result){
+            models.Post.update(updatePost,{where:{id:id, userId:userId}}).then(result =>{
+                res.status(200).json({
+                    message:"Post updated successfully",
+                    post:updatePost
+                });
+            });
+        }else{
+             res.status(404).json({
+                 message:"Post not found!"
+             });
+        }
+     }).catch(error => {
+         res.status(500).json({
+             message : "Something went to wrong!"
+         });
+     });
+
+}
+
+function destroy(req,res){
+
+    const id = req.params.id;
+    const userId = 1;
+
+    models.Post.destroy({where:{id:id, userId:userId}}).then(result =>{
+        if(result){
+            res.status(200).json({
+                message:"Post deleted successfully"
+            });
+       }else{
+            res.status(404).json({
+                message:"Post not found!"
+            });
+       }
     }).catch(error => {
         res.status(500).json({
             message:"Something wrong",
@@ -77,5 +120,6 @@ module.exports = {
     save:save,
     show:show,
     index:index,
-    update:update
+    update:update,
+    destroy:destroy
 }
