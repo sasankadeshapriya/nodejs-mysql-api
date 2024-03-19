@@ -58,23 +58,7 @@ function signUp(req, res){
     });
 }
 
-const JWT_KEY = 'b79)%^$you@#^';
 function login(req, res){
-
-    const schema = {
-        email: { type: "email", optional: false }
-    };
-    
-    const vldator = new validator();
-    const validationResponse = vldator.validate({ email: req.body.email }, schema);
-    
-    if(validationResponse !== true){
-        return res.status(400).json({
-            message: "Validation failed",
-            error: validationResponse
-        });
-    }
-
     models.User.findOne({where:{email: req.body.email}}).then(user => {
         if(user === null){
             res.status(401).json({
@@ -86,12 +70,11 @@ function login(req, res){
                     const token = jwt.sign({
                         email: user.email,
                         userId: user.id
-                    }, JWT_KEY); // Use directly
-                    
-                    // Send the token in the response
-                    res.status(200).json({
-                        message: "Authentication successful!",
-                        token: token
+                    }, process.env.JWT_KEY, function(err, token){
+                        res.status(200).json({
+                            message: "Authentication successful!",
+                            token: token
+                        });
                     });
                 }else{
                     res.status(401).json({

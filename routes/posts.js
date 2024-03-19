@@ -1,12 +1,13 @@
 const express = require('express');
 const postsController = require('../controllers/post.controller');
+const authCheckMiddleware = require('../middleware/authentication');
 
 const router = express.Router();
 
-router.post("/",postsController.save);
+router.post("/", authCheckMiddleware.authCheck, postsController.save);
 router.get("/",postsController.index);
 router.get("/:id",postsController.show);
-router.patch("/:id",postsController.update);
-router.delete("/:id",postsController.destroy);
+router.patch("/:id", authCheckMiddleware.authCheck, postsController.update);
+router.delete("/:id", authCheckMiddleware.authCheck, postsController.destroy);
 
 module.exports = router;
